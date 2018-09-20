@@ -1,0 +1,38 @@
+swagger: '2.0'
+info:
+  version: 1.0.0
+  title: Сервиc автопроката
+basePath: /
+tags:
+  - name: Методы
+schemes:
+  - http
+paths:
+  '/clientList':
+    get:
+      tags:
+        - Клиенты
+      summary: Получение списка клиентов
+      description: 'Получение списка клиентов'
+      operationId: getClientList
+      produces:
+        - application/json;charset=utf-8
+      parameters: []
+      responses:
+        '200':
+          description: Успешно
+          schema:
+            type: array
+            items:
+              type: object
+              $ref: '#/definitions/Client'
+definitions:
+  Client:
+    type: object
+    properties:
+      id:
+        type: number
+        description: Ид клиента
+      name:
+        type: string
+        description: Имя клиента
