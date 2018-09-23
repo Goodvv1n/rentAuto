@@ -1,28 +1,47 @@
 package ru.pleshkov.rentAuto.restBean;
 
 /**
- * Описание структуры для добавления нового клиента
+ * Описание структуры для добавления нового авто
  * @author pleshkov on 20.09.2018.
  */
-public class NewClient {
+public class NewAuto {
 
-    private String name;
+    /**
+     * Макрва авто
+     */
+    private String brand;
 
-    private Integer birthYear;
+    /**
+     * Год выпуска
+     */
+    private Integer year;
 
-    public String getName() {
-        return name;
+    /**
+     * Ид владельца
+     */
+    private Long clientId;
+
+    public String getBrand() {
+        return brand;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setBrand(String brand) {
+        this.brand = brand;
     }
 
-    public Integer getBirthYear() {
-        return birthYear;
+    public Integer getYear() {
+        return year;
     }
 
-    public void setBirthYear(Integer birthYear) {
-        this.birthYear = birthYear;
+    public void setYear(Integer year) {
+        this.year = year;
+    }
+
+    public Long getClientId() {
+        return clientId;
+    }
+
+    public void setClientId(Long clientId) {
+        this.clientId = clientId;
     }
 }

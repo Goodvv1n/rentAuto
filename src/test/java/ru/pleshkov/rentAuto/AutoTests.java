@@ -7,52 +7,101 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
-import ru.pleshkov.rentAuto.entity.Client;
-import ru.pleshkov.rentAuto.impl.ClientService;
-import ru.pleshkov.rentAuto.restBean.NewClient;
+import ru.pleshkov.rentAuto.entity.Auto;
+import ru.pleshkov.rentAuto.impl.AutoService;
+import ru.pleshkov.rentAuto.restBean.NewAuto;
 
 import java.util.ArrayList;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
-public class ClientTests {
+public class AutoTests {
 
 	@Autowired
-	private ClientService service;
+	private AutoService service;
 
-	private static final String clientName = "TestClientName";
-	private static final Integer clientYear = 1980;
+	private static final String BRAND = "TestAutoBrand";
+	private static final Integer YEAR = 1980;
+	private static final Long OWNER = 123L;
 
 	@After
 	public void afterTest() throws SAPIException {
-		ArrayList<Client> clients = (ArrayList<Client>) service.getClientList(clientName, clientYear);
+		ArrayList<Auto> clients = (ArrayList<Auto>) service.getAutoList(BRAND);
 		if (clients.size() != 0){
-			service.deleteClient(clients.get(0));
+			service.deleteAuto(clients.get(0));
 		}
 	}
 
 	@Test
-	public void getClientListTest(){
-		ArrayList<Client> clientList = (ArrayList<Client>) service.getClientList(null, null);
-		Assert.assertNotNull(clientList);
-		Assert.assertNotEquals(0, clientList.size());
+	public void findAutoTest() throws SAPIException {
+		createTestAuto();
+		ArrayList<Auto> autoListList = (ArrayList<Auto>) service.getAutoList(BRAND);
+		Assert.assertNotNull(autoListList);
+		Assert.assertEquals(autoListList.size(), 1);
+		Auto auto = autoListList.get(0);
+		Assert.assertEquals(auto.getBrand(), BRAND);
+		Assert.assertEquals(auto.getYear(), YEAR);
+		Assert.assertEquals(auto.getClientId(), OWNER);
 	}
 
 	@Test
-	public void addClient() throws SAPIException {
+	public void addAuto() throws SAPIException {
 		int startSize;
-		ArrayList<Client> clients = (ArrayList<Client>) service.getClientList(null, null);
-		Assert.assertNotNull(clients);
-		startSize = clients.size();
+		ArrayList<Auto> autoList = (ArrayList<Auto>) service.getAutoList();
+		Assert.assertNotNull(autoList);
+		startSize = autoList.size();
+		createTestAuto();
 
-		NewClient newClient = new NewClient();
-		newClient.setName(clientName);
-		newClient.setBirthYear(clientYear);
+		autoList = (ArrayList<Auto>) service.getAutoList();
+		Assert.assertNotNull(autoList);
+		Assert.assertEquals(startSize + 1, autoList.size());
+	}
 
-		service.addClient(newClient);
+	@Test(expected = SAPIException.class)
+	public void addSecondAutoTest() throws SAPIException {
+		try {
+			int startSize;
+			ArrayList<Auto> autoList = (ArrayList<Auto>) service.getAutoList();
+			Assert.assertNotNull(autoList);
+			startSize = autoList.size();
+			createTestAuto();
 
-		clients = (ArrayList<Client>) service.getClientList(null, null);
-		Assert.assertNotNull(clients);
-		Assert.assertEquals(startSize + 1, clients.size());
+			autoList = (ArrayList<Auto>) service.getAutoList();
+			Assert.assertNotNull(autoList);
+			Assert.assertEquals(startSize + 1, autoList.size());
+
+			createTestAuto();
+		} catch (SAPIException e){
+			Assert.assertEquals("Auto already exists", e.getMessage());
+			throw e;
+		}
+	}
+
+	@Test
+	public void deleteAuto() throws SAPIException {
+		int startSize;
+		createTestAuto();
+		ArrayList<Auto> autoList = (ArrayList<Auto>) service.getAutoList();
+		Assert.assertNotNull(autoList);
+		startSize = autoList.size();
+
+		ArrayList<Auto> findAutoList = (ArrayList<Auto>) service.getAutoList(BRAND);
+		Assert.assertNotNull(findAutoList);
+		Assert.assertEquals(findAutoList.size(), 1);
+		Auto auto = findAutoList.get(0);
+
+		service.deleteAuto(auto);
+
+		autoList = (ArrayList<Auto>) service.getAutoList();
+		Assert.assertNotNull(findAutoList);
+		Assert.assertEquals(startSize - 1, autoList.size());
+	}
+
+	private void createTestAuto() throws SAPIException {
+		NewAuto newAuto = new NewAuto();
+		newAuto.setBrand(BRAND);
+		newAuto.setYear(YEAR);
+		newAuto.setClientId(OWNER);
+		service.addAuto(newAuto);
 	}
 }

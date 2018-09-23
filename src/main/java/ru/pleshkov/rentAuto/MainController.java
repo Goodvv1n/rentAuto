@@ -1,14 +1,19 @@
 package ru.pleshkov.rentAuto;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
+import ru.pleshkov.rentAuto.entity.Auto;
 import ru.pleshkov.rentAuto.entity.Client;
-import ru.pleshkov.rentAuto.repository.ClientRepository;
+import ru.pleshkov.rentAuto.impl.AutoService;
+import ru.pleshkov.rentAuto.impl.ClientService;
+import ru.pleshkov.rentAuto.impl.RentService;
+import ru.pleshkov.rentAuto.restBean.NewAuto;
+import ru.pleshkov.rentAuto.restBean.NewClient;
+
+import java.util.List;
 
 /**
  * @author pleshkov on 19.09.2018.
@@ -17,26 +22,50 @@ import ru.pleshkov.rentAuto.repository.ClientRepository;
 public class MainController {
 
     @Autowired
-    private ClientRepository clientRepository;
+    private ClientService clientService;
 
-    @RequestMapping("/greeting")
-    public @ResponseBody String greeting(@RequestParam(name="name", required=false, defaultValue="World") String name, Model model) {
-        model.addAttribute("name", name);
-        return "greeting";
+    @Autowired
+    private AutoService autoService;
+
+    @Autowired
+    private RentService rentService;
+
+    @GetMapping(path="/client")
+    @ResponseBody
+    public ResponseEntity<List<Client>> getClientList(@RequestParam(required = false) String name) {
+        List<Client> results = clientService.getClientList(name);
+        return new ResponseEntity<>(results, HttpStatus.OK);
     }
 
-    @GetMapping(path="/add") // Map ONLY GET Requests
-    public @ResponseBody String addNewUser (@RequestParam String name
-            , @RequestParam String email) {
-        Client client = new Client();
-        client.setName(name);
-        client.setEmail(email);
-        clientRepository.save(client);
-        return "Saved";
+    @PostMapping("/client")
+    @ResponseBody
+    public ResponseEntity addNewClient (@RequestBody NewClient newClient) {
+        try{
+            clientService.addClient(newClient);
+        } catch (SAPIException e){
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        return ResponseEntity.ok(HttpStatus.CREATED);
     }
 
-    @GetMapping(path="/clientList")
-    public @ResponseBody Iterable<Client> getClientList() {
-        return clientRepository.findAll();
+    @PostMapping("/auto")
+    @ResponseBody
+    public ResponseEntity addNewAuto (@RequestBody NewAuto newAuto) {
+        try{
+            autoService.addAuto(newAuto);
+        } catch (SAPIException e){
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        return ResponseEntity.ok(HttpStatus.CREATED);
     }
+
+    @GetMapping(path="/auto")
+    @ResponseBody
+    public ResponseEntity<List<Auto>> getAutoList(@RequestParam(required = false) String brand) {
+        List<Auto> results = autoService.getAutoList(brand);
+        return new ResponseEntity<>(results, HttpStatus.OK);
+    }
+
+
+
 }

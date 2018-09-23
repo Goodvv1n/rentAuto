@@ -8,6 +8,32 @@ tags:
 schemes:
   - http
 paths:
+  '/client':
+    post:
+      tags:
+          - Клиенты
+      summary: Добавление клиента
+      description: 'Добавление клиента'
+      operationId: addNewClient
+      consumes:
+        - application/json;charset=utf-8
+      produces:
+        - application/json;charset=utf-8
+      parameters:
+        - name: newClient
+          in: body
+          description: Новый клиент
+          required: true
+          schema:
+            $ref: '#/definitions/NewClient'
+      responses:
+        '200':
+          description: Успешно
+          schema:
+            type: array
+            items:
+              type: object
+              $ref: '#/definitions/Client'
   '/clientList':
     get:
       tags:
@@ -36,3 +62,16 @@ definitions:
       name:
         type: string
         description: Имя клиента
+  NewClient:
+    type: object
+    properties:
+      name:
+        type: string
+        description: Имя клиента
+      birthYear:
+        type: number
+        description: Год рождения клиента
+      email:
+        type: string
+        description: Email клиента
+

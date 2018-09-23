@@ -1,4 +1,4 @@
-package ru.pleshkov.rentAuto.rest;
+package ru.pleshkov.rentAuto.restBean;
 
 /**
  * Описание структуры для добавления нового клиента
@@ -6,11 +6,20 @@ package ru.pleshkov.rentAuto.rest;
  */
 public class NewClient {
 
+    /**
+     * Имя клиента
+     */
     private String name;
 
+    /**
+     * год рождения
+     */
     private Integer birthYear;
 
-    private String email;
+    /**
+     * Ид автомобиля
+     */
+    private Long autoId;
 
     public String getName() {
         return name;
@@ -28,11 +37,11 @@ public class NewClient {
         this.birthYear = birthYear;
     }
 
-    public String getEmail() {
-        return email;
+    public Long getAutoId() {
+        return autoId;
     }
 
-    public void setEmail(String email) {
-        this.email = email;
+    public void setAutoId(Long autoId) {
+        this.autoId = autoId;
     }
 }

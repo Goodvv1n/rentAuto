@@ -6,6 +6,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
 /**
+ * Сущность клиента
  * @author pleshkov on 20.09.2018.
  */
 @Entity
@@ -14,12 +15,24 @@ public class Client {
     /**
      * Ид клиента
      */
-    @Id@GeneratedValue(strategy = GenerationType.AUTO)
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
+    /**
+     * Имя клиента
+     */
     private String name;
 
-    private String email;
+    /**
+     * Год рождения
+     */
+    private Integer birthYear;
+
+    /**
+     * Ид автомобиля
+     */
+    private Long autoId;
 
     public Long getId() {
         return id;
@@ -37,11 +50,19 @@ public class Client {
         this.name = name;
     }
 
-    public String getEmail() {
-        return email;
+    public Integer getBirthYear() {
+        return birthYear;
     }
 
-    public void setEmail(String email) {
-        this.email = email;
+    public void setBirthYear(Integer birthYear) {
+        this.birthYear = birthYear;
+    }
+
+    public Long getAutoId() {
+        return autoId;
+    }
+
+    public void setAutoId(Long autoId) {
+        this.autoId = autoId;
     }
 }

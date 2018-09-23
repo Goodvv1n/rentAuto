@@ -7,13 +7,15 @@ import ru.pleshkov.rentAuto.entity.Client;
 import ru.pleshkov.rentAuto.repository.ClientRepository;
 import ru.pleshkov.rentAuto.restBean.NewClient;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
+ * Сервис для обработки действий с клиентами
  * @author pleshkov on 21.09.2018.
  */
 @Service
-public class Impl {
+public class ClientService {
 
     @Autowired
     private ClientRepository clientRepository;
@@ -23,24 +25,35 @@ public class Impl {
      * @param newClient клиент
      * @throws SAPIException ошибка сервиса
      */
-    public void addClient(NewClient newClient) throws SAPIException {
+    public Client addClient(NewClient newClient) throws SAPIException {
         if (isClientExist(newClient)){
-            throw new SAPIException("Client already exists");
+            throw new SAPIException("Client " + newClient.getName() + " already exists");
         }
         Client client = new Client();
         client.setName(newClient.getName());
         client.setBirthYear(newClient.getBirthYear());
+        return clientRepository.save(client);
+    }
+
+    public void updateClient(Client client){
         clientRepository.save(client);
     }
 
     /**
      * Получить список клиентов
      * @param name Имя клиента
-     * @param birthYear год рождения
      * @return результат
      */
-    public List<Client> getClientList(String name, Integer birthYear) {
-        return getClients(name, birthYear);
+    public List<Client> getClientList(String name) {
+        return findClients(name);
+    }
+
+    /**
+     * Получить весь список клиентов
+     * @return результат
+     */
+    public List<Client> getClientList() {
+        return getClientList(null);
     }
 
     /**
@@ -61,7 +74,7 @@ public class Impl {
      * @return результат
      */
     private boolean isClientExist(NewClient client){
-        return !(getClients(client.getName(), client.getBirthYear()).size() == 0);
+        return !(findClients(client.getName()).size() == 0);
     }
 
     /**
@@ -70,27 +83,35 @@ public class Impl {
      * @return результат
      */
     private boolean isClientExist(Client client){
-        clientRepository.findById(client.getId());
-        return true;
+        return clientRepository.findById(client.getId()).isPresent();
+    }
+
+    /**
+     * Получить клиента по имени
+     * @param name имя клиента
+     * @return результат
+     */
+    public Client findClient(String name) throws SAPIException {
+        ArrayList<Client> list = (ArrayList<Client>) findClients(name);
+        if (list.size() == 0){
+            throw new SAPIException("Client " + name + " not found");
+        }
+        if (list.size() > 1){
+            throw new SAPIException("Found more than one object");
+        }
+        return list.get(0);
     }
 
     /**
      * Получение списка клиентов
      * Наименование и год рождения не обязательные параметры. Если параметр не указан - игнорируется.
      * @param name Имя клиента
-     * @param year Год рождения клиента
      * @return список
      */
-    private List<Client> getClients(String name, Integer year){
-        if ((name == null || name.isEmpty()) && year == null){
+    private List<Client> findClients(String name) {
+        if ((name == null || name.isEmpty())) {
             return (List<Client>) clientRepository.findAll();
         }
-        if ((name == null || name.isEmpty()) && year != null){
-            return clientRepository.findByBirthYear(year);
-        }
-        if (!name.isEmpty() && year == null){
-            return clientRepository.findByName(name);
-        }
-        return clientRepository.findByNameAndBirthYear(name, year);
+        return clientRepository.findByName(name);
     }
 }

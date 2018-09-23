@@ -4,7 +4,6 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import java.util.Date;
 
 /**
  * Сущность События аренды
@@ -29,16 +28,6 @@ public class Rent {
      */
     private Long autoId;
 
-    /**
-     * Дата начала аренды
-      */
-    private Date startRentDate;
-
-    /**
-     * Дата завершения аренды
-     */
-    private Date endRentDate;
-
     public Long getId() {
         return id;
     }
@@ -61,21 +50,5 @@ public class Rent {
 
     public void setAutoId(Long autoId) {
         this.autoId = autoId;
-    }
-
-    public Date getStartRentDate() {
-        return startRentDate;
-    }
-
-    public void setStartRentDate(Date startRentDate) {
-        this.startRentDate = startRentDate;
-    }
-
-    public Date getEndRentDate() {
-        return endRentDate;
-    }
-
-    public void setEndRentDate(Date endRentDate) {
-        this.endRentDate = endRentDate;
     }
 }

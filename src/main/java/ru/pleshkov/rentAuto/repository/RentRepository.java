@@ -1,6 +1,7 @@
 package ru.pleshkov.rentAuto.repository;
 
 import org.springframework.data.repository.CrudRepository;
+import ru.pleshkov.rentAuto.entity.Rent;
 
 import java.util.List;
 
