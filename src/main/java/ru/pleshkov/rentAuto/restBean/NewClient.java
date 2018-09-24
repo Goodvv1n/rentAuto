@@ -1,23 +1,10 @@
-package ru.pleshkov.rentAuto.entity;
-
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+package ru.pleshkov.rentAuto.restBean;
 
 /**
- * Сущность клиента
+ * Описание структуры для добавления нового клиента
  * @author pleshkov on 20.09.2018.
  */
-@Entity
-public class Client {
-
-    /**
-     * Ид клиента
-     */
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long id;
+public class NewClient {
 
     /**
      * Имя клиента
@@ -25,7 +12,7 @@ public class Client {
     private String name;
 
     /**
-     * Год рождения
+     * год рождения
      */
     private Integer birthYear;
 
@@ -33,14 +20,6 @@ public class Client {
      * Ид автомобиля
      */
     private Long autoId;
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
 
     public String getName() {
         return name;

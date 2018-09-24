@@ -8,7 +8,7 @@ tags:
 schemes:
   - http
 paths:
-  '/clientList':
+  '/client':
     get:
       tags:
         - Клиенты
@@ -26,9 +26,177 @@ paths:
             items:
               type: object
               $ref: '#/definitions/Client'
+    post:
+      tags:
+          - Клиенты
+      summary: Добавление клиента
+      description: 'Добавление клиента. В случае, если клиент с таким именем уже существует, будет возвращен код 500 ()'
+      operationId: addNewClient
+      consumes:
+        - application/json;charset=utf-8
+      parameters:
+        - name: newClient
+          in: body
+          description: Новый клиент
+          required: true
+          schema:
+            $ref: '#/definitions/NewClient'
+      responses:
+        '201':
+          description: CREATED
+        '500':
+          description: Ошибка сервиса
+    delete:
+      tags:
+          - Клиенты
+      summary: Удаление клиента
+      description: 'Удаление клиента'
+      produces:
+        - application/json;charset=utf-8
+      operationId: deleteClient
+      parameters:
+        - name: name
+          in: query
+          description: Имя клиента
+          required: true
+          type: string
+      responses:
+        '204':
+          description: Успешно
+        '500':
+          description: Ошибка сервиса
+  '/auto':
+    get:
+      tags:
+        - Авто
+      summary: Получение списка авто
+      description: 'Получение списка авто'
+      operationId: getAutoList
+      produces:
+        - application/json;charset=utf-8
+      parameters: []
+      responses:
+        '200':
+          description: Успешно
+          schema:
+            type: array
+            items:
+              type: object
+              $ref: '#/definitions/Auto'
+    post:
+      tags:
+        - Авто
+      summary: Добавление авто
+      description: 'Добавление авто'
+      operationId: addNewAuto
+      consumes:
+        - application/json;charset=utf-8
+      parameters:
+        - name: newAuto
+          in: body
+          description: Новый авто
+          required: true
+          schema:
+            $ref: '#/definitions/NewAuto'
+      responses:
+        '201':
+          description: CREATED
+        '500':
+          description: Ошибка сервиса
+    delete:
+      tags:
+        - Авто
+      summary: Удаление авто
+      description: 'Удаление авто'
+      produces:
+        - application/json;charset=utf-8
+      operationId: deleteAuto
+      parameters:
+        - name: brand
+          in: query
+          description: Марка авто
+          required: true
+          type: string
+      responses:
+        '204':
+          description: Успешно
+        '500':
+          description: Ошибка сервиса
+  '/rent':
+    get:
+      tags:
+        - Бронирование
+      summary: Получение списка броней
+      description: 'Получение списка броней'
+      operationId: getRentList
+      produces:
+        - application/json;charset=utf-8
+      parameters:
+        - name: clientName
+          in: query
+          description: Имя клиента
+          required: true
+          type: string
+        - name: autoBrand
+          in: query
+          description: Марка авто
+          required: true
+          type: string
+      responses:
+        '200':
+          description: Успешно
+          schema:
+            type: array
+            items:
+              type: object
+              $ref: '#/definitions/Rent'
+    post:
+      tags:
+        - Бронирование
+      summary: Добавление брони
+      description: 'Добавление брони'
+      operationId: addRent
+      consumes:
+        - application/json;charset=utf-8
+      parameters:
+        - name: newAuto
+          in: body
+          description: Новый авто
+          required: true
+          schema:
+            $ref: '#/definitions/NewRent'
+      responses:
+        '201':
+          description: CREATED
+        '500':
+          description: Ошибка сервиса
+    delete:
+      tags:
+        - Бронирование
+      summary: Удаление брони
+      description: 'Удаление брони'
+      operationId: deleteRent
+      parameters:
+        - name: clientName
+          in: query
+          description: Имя клиента
+          required: true
+          type: string
+        - name: autoBrand
+          in: query
+          description: Марка авто
+          required: true
+          type: string
+      responses:
+        '204':
+          description: Успешно
+        '500':
+          description: Ошибка сервиса
+
 definitions:
   Client:
     type: object
+    description: Структура объекта "Клиент", возвращаемого сервисом
     properties:
       id:
         type: number
@@ -36,3 +204,77 @@ definitions:
       name:
         type: string
         description: Имя клиента
+      birthYear:
+        type: integer
+        description: Гож рождения
+      autoId:
+        type: number
+        description: Ид автомобиля
+  NewClient:
+    type: object
+    description: Структура объекта необходимого для добавления клиента через сервис
+    properties:
+      name:
+        type: string
+        description: Имя клиента
+      birthYear:
+        type: number
+        description: Год рождения клиента
+      autoId:
+        type: number
+        description: Ид клиента
+  Auto:
+    type: object
+    description: Структура объекта "Авто", возвращаемого сервисом
+    properties:
+      id:
+        type: number
+        description: Ид авто
+      brand:
+        type: string
+        description: Mарка авто
+      year:
+        type: integer
+        description: Год выпуска
+      clientId:
+        type: number
+        description: Ид клиента
+  NewAuto:
+    type: object
+    description: Структура объекта необходимого для добавления авто через сервис
+    properties:
+      brand:
+        type: string
+        description: Mарка авто
+      year:
+        type: number
+        description: Год выпуска
+      clientId:
+        type: number
+        description: Ид клиента
+  NewRent:
+    type: object
+    description: Структура объекта необходимого для бронирования авто
+    properties:
+      clientName:
+        type: string
+        description: Имя клиента
+      clientYear:
+        type: number
+        description: Год рождения клиента
+      autoBrand:
+        type: string
+        description: Mарка авто
+      autoYear:
+        type: number
+        description: Год выпуска
+  Rent:
+    type: object
+    description: Структура объекта необходимого для бронирования авто
+    properties:
+      auto:
+        $ref: '#/definitions/Auto'
+        description: Забронированное авто
+      client:
+        $ref: '#/definitions/Client'
+        description: Клиент
