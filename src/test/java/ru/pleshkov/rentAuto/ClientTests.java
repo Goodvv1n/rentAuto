@@ -8,7 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 import ru.pleshkov.rentAuto.entity.Client;
-import ru.pleshkov.rentAuto.impl.ClientService;
+import ru.pleshkov.rentAuto.service.ClientService;
 import ru.pleshkov.rentAuto.restBean.NewClient;
 
 import java.util.ArrayList;
@@ -34,12 +34,12 @@ public class ClientTests {
 	@Test
 	public void addClient() throws SAPIException {
 		int startSize;
-		ArrayList<Client> clients = (ArrayList<Client>) service.getClientList(null);
+		ArrayList<Client> clients = (ArrayList<Client>) service.getClientList();
 		Assert.assertNotNull(clients);
 		startSize = clients.size();
 		createClient();
 
-		clients = (ArrayList<Client>) service.getClientList(null);
+		clients = (ArrayList<Client>) service.getClientList();
 		Assert.assertNotNull(clients);
 		Assert.assertEquals(startSize + 1, clients.size());
 	}
@@ -48,12 +48,12 @@ public class ClientTests {
 	public void addSecondItemClientTest() throws SAPIException {
 		try {
 			int startSize;
-			ArrayList<Client> clients = (ArrayList<Client>) service.getClientList(null);
+			ArrayList<Client> clients = (ArrayList<Client>) service.getClientList();
 			Assert.assertNotNull(clients);
 			startSize = clients.size();
 			createClient();
 
-			clients = (ArrayList<Client>) service.getClientList(null);
+			clients = (ArrayList<Client>) service.getClientList();
 			Assert.assertNotNull(clients);
 			Assert.assertEquals(startSize + 1, clients.size());
 
@@ -87,7 +87,7 @@ public class ClientTests {
 	@Test
 	public void findClient() throws SAPIException {
 		createClient();
-		ArrayList<Client> clients = (ArrayList<Client>) service.getClientList(null);
+		ArrayList<Client> clients = (ArrayList<Client>) service.getClientList();
 		Assert.assertNotNull(clients);
 		Assert.assertEquals(1, clients.size());
 		Assert.assertEquals(clients.get(0).getName(), CLIENT_NAME);

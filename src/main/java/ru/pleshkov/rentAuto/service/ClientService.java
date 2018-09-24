@@ -1,4 +1,4 @@
-package ru.pleshkov.rentAuto.impl;
+package ru.pleshkov.rentAuto.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -35,7 +35,7 @@ public class ClientService {
         return clientRepository.save(client);
     }
 
-    public void updateClient(Client client){
+    void updateClient(Client client){
         clientRepository.save(client);
     }
 
@@ -65,6 +65,16 @@ public class ClientService {
         if (!isClientExist(client)){
             throw new SAPIException("Client not found");
         }
+        clientRepository.delete(client);
+    }
+
+    /**
+     * Удаление клиента
+     * @param name Имя клиента
+     * @throws SAPIException ошибка сервиса
+     */
+    public void deleteClient(String name) throws SAPIException {
+        Client client = findClient(name);
         clientRepository.delete(client);
     }
 
@@ -109,7 +119,7 @@ public class ClientService {
      * @return список
      */
     private List<Client> findClients(String name) {
-        if ((name == null || name.isEmpty())) {
+        if (name == null || name.isEmpty()) {
             return (List<Client>) clientRepository.findAll();
         }
         return clientRepository.findByName(name);

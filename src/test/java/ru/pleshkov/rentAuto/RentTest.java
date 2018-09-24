@@ -9,9 +9,11 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 import ru.pleshkov.rentAuto.entity.Auto;
 import ru.pleshkov.rentAuto.entity.Client;
-import ru.pleshkov.rentAuto.impl.AutoService;
-import ru.pleshkov.rentAuto.impl.ClientService;
-import ru.pleshkov.rentAuto.impl.RentService;
+import ru.pleshkov.rentAuto.restBean.Rent;
+import ru.pleshkov.rentAuto.restBean.NewRent;
+import ru.pleshkov.rentAuto.service.AutoService;
+import ru.pleshkov.rentAuto.service.ClientService;
+import ru.pleshkov.rentAuto.service.RentService;
 import ru.pleshkov.rentAuto.restBean.NewAuto;
 import ru.pleshkov.rentAuto.restBean.NewClient;
 
@@ -45,21 +47,77 @@ public class RentTest {
     }
 
     @Test
-    public void findRentAction() throws SAPIException {
+    public void findRentTest() throws SAPIException {
         Client client = createClient();
         Auto auto = createAuto();
         Assert.assertNull(client.getAutoId());
         Assert.assertNull(auto.getClientId());
-
         rentService.addRentAction(client, auto);
+
+        Rent rent = rentService.findRentActions(client.getName(), auto.getBrand());
+        Assert.assertNotNull(rent);
+        Assert.assertEquals(client.getName(), rent.getClient().getName());
+        Assert.assertEquals(auto.getBrand(), rent.getAuto().getBrand());
 
         Client clientDB = clientService.findClient(CLIENT_NAME);
         Auto autoDB = autoService.findAutoByName(AUTO_BRAND);
-
         Assert.assertEquals(clientDB.getAutoId(), auto.getId());
         Assert.assertEquals(autoDB.getClientId(), client.getId());
+    }
 
+    @Test
+    public void addRentTest() throws SAPIException {
+        createRent();
+        Client client = clientService.findClient(CLIENT_NAME);
+        Auto auto = autoService.findAutoByName(AUTO_BRAND);
+        Assert.assertEquals(client.getAutoId(), auto.getId());
+        Assert.assertEquals(auto.getClientId(), client.getId());
+    }
 
+    @Test (expected = SAPIException.class)
+    public void deleteRentWithoutClient() throws SAPIException {
+        Client client = createClient();
+        Auto auto = createAuto();
+        Assert.assertNull(client.getAutoId());
+        Assert.assertNull(auto.getClientId());
+        rentService.addRentAction(client, auto);
+
+        Rent rent = rentService.findRentActions(client.getName(), auto.getBrand());
+        Assert.assertNotNull(rent);
+        Assert.assertEquals(client.getName(), rent.getClient().getName());
+        Assert.assertEquals(auto.getBrand(), rent.getAuto().getBrand());
+
+        rentService.deleteRentAction(client.getName(), auto.getBrand());
+
+        try {
+            rentService.findRentActions(client.getName(), auto.getBrand());
+        } catch (SAPIException e){
+            Assert.assertEquals(e.getMessage(), "Client Client_Name not found");
+            throw e;
+        }
+    }
+
+    @Test (expected = SAPIException.class)
+    public void disabledAutoTest() throws SAPIException {
+        try {
+            Client client = createClient();
+            Auto auto = createAuto();
+            auto.setClientId(99999L);
+
+            rentService.addRentAction(client, auto);
+        } catch (SAPIException e){
+            Assert.assertEquals("The car belongs to another client", e.getMessage());
+            throw e;
+        }
+    }
+
+    private void createRent() throws SAPIException {
+        NewRent newRent = new NewRent();
+        newRent.setClientName(CLIENT_NAME);
+        newRent.setClientYear(CLIENT_YEAR);
+        newRent.setAutoBrand(AUTO_BRAND);
+        newRent.setAutoYear(AUTO_YEAR);
+        rentService.addRentAction(newRent);
     }
 
     private Auto createAuto() throws SAPIException {
@@ -89,13 +147,4 @@ public class RentTest {
             autoService.deleteAuto(list.get(0));
         }
     }
-//
-//    private void deleteRentAction() throws SAPIException {
-//        Client client = createClient();
-//        Auto auto = createAuto();
-//        ArrayList<Rent> list = (ArrayList<Rent>) rentService.findRentActions(client.getId(), auto.getId());
-//        if (list.size() != 0){
-//            rentService.deleteRentAction(list.get(0));
-//        }
-//    }
 }

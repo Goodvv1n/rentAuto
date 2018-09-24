@@ -1,4 +1,4 @@
-package ru.pleshkov.rentAuto.impl;
+package ru.pleshkov.rentAuto.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -39,11 +39,12 @@ public class AutoService {
 
     /**
      * Добавление автомобиля
+     * Если такой автомобиль уже сущестует, будет возвращен экземпляр существующего в БД авто.
      * @param newAuto добавляемый автомобиль
      */
     public Auto addAuto(NewAuto newAuto) throws SAPIException {
         if (isAutoExist(newAuto)){
-            throw new SAPIException("Auto already exists");
+           return findAutoByName(newAuto.getBrand());
         }
         Auto auto = new Auto();
         auto.setBrand(newAuto.getBrand());
@@ -56,7 +57,7 @@ public class AutoService {
      * Обновить сущность авто
      * @param auto автомобиль
      */
-    public void updateAuto(Auto auto){
+    void updateAuto(Auto auto){
         autoRepository.save(auto);
     }
 
@@ -72,10 +73,20 @@ public class AutoService {
         autoRepository.delete(auto);
     }
 
+    /**
+     * Удаление автомобиля
+     * @param brand марка автомобиля
+     * @throws SAPIException ошибка сервиса
+     */
+    public void deleteAuto(String brand) throws SAPIException {
+        Auto auto = findAutoByName(brand);
+        autoRepository.delete(auto);
+    }
+
     public Auto findAutoByName(String brand) throws SAPIException {
         ArrayList<Auto> list = (ArrayList<Auto>) findAuto(brand);
         if (list == null || list.size() == 0) {
-            throw new SAPIException("Auto not found");
+            throw new SAPIException("Auto " + brand +" not found");
         } else if (list.size() > 1){
             throw new SAPIException("Found more than one item");
         }

@@ -8,7 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 import ru.pleshkov.rentAuto.entity.Auto;
-import ru.pleshkov.rentAuto.impl.AutoService;
+import ru.pleshkov.rentAuto.service.AutoService;
 import ru.pleshkov.rentAuto.restBean.NewAuto;
 
 import java.util.ArrayList;
@@ -57,24 +57,21 @@ public class AutoTests {
 		Assert.assertEquals(startSize + 1, autoList.size());
 	}
 
-	@Test(expected = SAPIException.class)
 	public void addSecondAutoTest() throws SAPIException {
-		try {
-			int startSize;
-			ArrayList<Auto> autoList = (ArrayList<Auto>) service.getAutoList();
-			Assert.assertNotNull(autoList);
-			startSize = autoList.size();
-			createTestAuto();
+		int startSize;
+		ArrayList<Auto> autoList = (ArrayList<Auto>) service.getAutoList();
+		Assert.assertNotNull(autoList);
+		startSize = autoList.size();
+		createTestAuto();
 
-			autoList = (ArrayList<Auto>) service.getAutoList();
-			Assert.assertNotNull(autoList);
-			Assert.assertEquals(startSize + 1, autoList.size());
+		autoList = (ArrayList<Auto>) service.getAutoList();
+		Assert.assertNotNull(autoList);
+		Assert.assertEquals(startSize + 1, autoList.size());
 
-			createTestAuto();
-		} catch (SAPIException e){
-			Assert.assertEquals("Auto already exists", e.getMessage());
-			throw e;
-		}
+		createTestAuto();
+		autoList = (ArrayList<Auto>) service.getAutoList();
+		Assert.assertNotNull(autoList);
+		Assert.assertEquals(startSize + 1, autoList.size());
 	}
 
 	@Test

@@ -7,11 +7,13 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import ru.pleshkov.rentAuto.entity.Auto;
 import ru.pleshkov.rentAuto.entity.Client;
-import ru.pleshkov.rentAuto.impl.AutoService;
-import ru.pleshkov.rentAuto.impl.ClientService;
-import ru.pleshkov.rentAuto.impl.RentService;
+import ru.pleshkov.rentAuto.restBean.Rent;
 import ru.pleshkov.rentAuto.restBean.NewAuto;
 import ru.pleshkov.rentAuto.restBean.NewClient;
+import ru.pleshkov.rentAuto.restBean.NewRent;
+import ru.pleshkov.rentAuto.service.AutoService;
+import ru.pleshkov.rentAuto.service.ClientService;
+import ru.pleshkov.rentAuto.service.RentService;
 
 import java.util.List;
 
@@ -45,7 +47,18 @@ public class MainController {
         } catch (SAPIException e){
             return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        return ResponseEntity.ok(HttpStatus.CREATED);
+        return new ResponseEntity<>(HttpStatus.CREATED);
+    }
+
+    @DeleteMapping("/client")
+    @ResponseBody
+    public ResponseEntity deleteClient(@RequestParam String name){
+        try{
+            clientService.deleteClient(name);
+        } catch (SAPIException e){
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
     @PostMapping("/auto")
@@ -56,7 +69,7 @@ public class MainController {
         } catch (SAPIException e){
             return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        return ResponseEntity.ok(HttpStatus.CREATED);
+        return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
     @GetMapping(path="/auto")
@@ -66,6 +79,50 @@ public class MainController {
         return new ResponseEntity<>(results, HttpStatus.OK);
     }
 
+    @DeleteMapping("/auto")
+    @ResponseBody
+    public ResponseEntity deleteAuto(@RequestParam String brand){
+        try{
+            autoService.deleteAuto(brand);
+        } catch (SAPIException e){
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
 
+    @GetMapping(path="/rent")
+    @ResponseBody
+    public ResponseEntity getRentList(@RequestParam String clientName,
+                                  @RequestParam String autoBrand) {
+        Rent rent;
+        try{
+            rent = rentService.findRentActions(clientName, autoBrand);
+        } catch (SAPIException e){
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        return new ResponseEntity<>(rent, HttpStatus.OK);
+    }
 
+    @PostMapping(path="/rent")
+    @ResponseBody
+    public ResponseEntity addRent(@RequestBody NewRent newRent) {
+        try{
+           rentService.addRentAction(newRent);
+        } catch (SAPIException e){
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        return new ResponseEntity<>(HttpStatus.CREATED);
+    }
+
+    @DeleteMapping(path="/rent")
+    @ResponseBody
+    public ResponseEntity deleteRent(@RequestParam String clientName,
+                                     @RequestParam String autoBrand) {
+        try{
+            rentService.deleteRentAction(clientName, autoBrand);
+        } catch (SAPIException e){
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
 }
